@@ -54,11 +54,22 @@ if (isset($_GET['restore_id'])) {
     header("Location: manage_products.php");
 }
 
-// Permanent Delete
+//Permanent Delete
 if (isset($_GET['perm_del_id'])) {
-    $pid = $_GET['perm_del_id'];
-    $conn->query("DELETE FROM Products WHERE product_id = $pid");
-    header("Location: manage_products.php");
+    $pid = (int)$_GET['perm_del_id'];
+    
+    try {
+        // ลองพยายามลบสินค้าดู
+        $conn->query("DELETE FROM Products WHERE product_id = $pid");
+        header("Location: manage_products.php");
+        
+    } catch (mysqli_sql_exception $e) {
+        // ถ้าฐานข้อมูลเตะกลับมา (ติด Foreign Key) ให้แสดงแจ้งเตือนสวยๆ แทน
+        echo "<script>
+            alert('❌ ไม่อนุญาตให้ลบถาวร!\\n\\nสินค้านี้มีประวัติการขาย (Order) หรือประวัติเข้าออกสต็อก (Stock Log) อยู่ในระบบแล้ว\\nระบบจึงทำการล็อกไว้เพื่อป้องกันบิลบัญชีย้อนหลังเสียหาย\\n\\n💡 คำแนะนำ: ให้ปล่อยสินค้านี้ทิ้งไว้ในสถานะ Soft Delete (ถังขยะ) ก็เพียงพอแล้วครับ'); 
+            window.location='manage_products.php';
+        </script>";
+    }
 }
 
 // --- 3. Fetch Data ---

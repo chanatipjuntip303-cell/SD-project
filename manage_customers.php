@@ -32,11 +32,22 @@ if (isset($_GET['restore_id'])) {
     $conn->query("UPDATE Customers SET is_deleted = 0 WHERE customer_id = $cid");
     header("Location: manage_customers.php");
 }
-// Permanent Delete
+//ลบถาวร (Permanent Delete)
 if (isset($_GET['perm_del_id'])) {
-    $cid = $_GET['perm_del_id'];
-    if ($cid == 1) { echo "<script>alert('Cannot delete General Customer!'); window.location='manage_customers.php';</script>"; }
-    else { $conn->query("DELETE FROM Customers WHERE customer_id = $cid"); header("Location: manage_customers.php"); }
+    $cid = (int)$_GET['perm_del_id'];
+    
+    try {
+        // ลองพยายามลบข้อมูลลูกค้า
+        $conn->query("DELETE FROM Customers WHERE customer_id = $cid");
+        header("Location: manage_customers.php");
+        
+    } catch (mysqli_sql_exception $e) {
+        // ถ้าฐานข้อมูลเตะกลับมา (ติด Foreign Key) ให้แสดงแจ้งเตือน
+        echo "<script>
+            alert('ไม่อนุญาตให้ลบถาวร!\\n\\nลูกค้ารายนี้มีประวัติการสั่งซื้อ (Orders) หรือใบแจ้งหนี้อยู่ในระบบแล้ว\\nระบบจึงทำการล็อกไว้เพื่อป้องกันข้อมูลบัญชี\\n\\n💡 คำแนะนำ: ให้ปล่อยลูกค้ารายนี้ทิ้งไว้ในสถานะ Soft Delete (ถังขยะ) ก็เพียงพอแล้วครับ'); 
+            window.location='manage_customers.php';
+        </script>";
+    }
 }
 
 // Fetch
