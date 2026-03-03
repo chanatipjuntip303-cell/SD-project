@@ -12,8 +12,9 @@ $uid = $_SESSION['user_id'];
 // Add
 if (isset($_POST['add_product'])) {
     $name = $conn->real_escape_string($_POST['name']);
+    $desc = $conn->real_escape_string($_POST['description']);
     $cost = $_POST['cost']; $price = $_POST['price']; $qty = $_POST['qty'];
-    $sql = "INSERT INTO Products (product_name, cost, price, stock_qty) VALUES ('$name', $cost, $price, $qty)";
+    $sql = "INSERT INTO Products (product_name, description, cost, price, stock_qty) VALUES ('$name', '$desc', $cost, $price, $qty)";
     if ($conn->query($sql)) {
         $pid = $conn->insert_id;
         $conn->query("INSERT INTO Stock_Logs (product_id, qty_change, log_type, employee_id) VALUES ($pid, $qty, 'Restock', $uid)");
@@ -35,8 +36,9 @@ if (isset($_POST['restock_submit'])) {
 if (isset($_POST['edit_product'])) {
     $pid = $_POST['product_id'];
     $name = $conn->real_escape_string($_POST['name']);
+    $desc = $conn->real_escape_string($_POST['description']);
     $cost = $_POST['cost']; $price = $_POST['price'];
-    $conn->query("UPDATE Products SET product_name='$name', cost=$cost, price=$price WHERE product_id=$pid");
+    $conn->query("UPDATE Products SET product_name='$name', description='$desc', cost=$cost, price=$price WHERE product_id=$pid");
     header("Location: manage_products.php");
 }
 
@@ -119,17 +121,20 @@ $logs = $conn->query("SELECT l.*, p.product_name, e.employee_name FROM Stock_Log
         <div class="card">
             <h3>Current Stock</h3>
             <table>
-                <thead><tr><th>ID</th><th>Name</th><th>Cost/Price</th><th>Stock</th><th>Actions</th></tr></thead>
+                <thead><tr><th>ID</th><th>Name & Description</th><th>Cost/Price</th><th>Stock</th><th>Actions</th></tr></thead>
                 <tbody>
                     <?php while($p = $products->fetch_assoc()): ?>
                     <tr>
                         <td>#<?php echo $p['product_id']; ?></td>
-                        <td><strong><?php echo $p['product_name']; ?></strong></td>
+                        <td>
+                            <strong><?php echo htmlspecialchars($p['product_name']); ?></strong><br>
+                            <small style="color: #64748b;"><?php echo $p['description'] ? htmlspecialchars($p['description']) : '-'; ?></small>
+                        </td>
                         <td><small>Cost: <?php echo $p['cost']; ?></small><br><strong style="color:#2563eb;"><?php echo $p['price']; ?></strong></td>
                         <td><?php echo ($p['stock_qty'] < 30) ? "<span class='badge-low'>Low: {$p['stock_qty']}</span>" : "<span class='badge-ok'>{$p['stock_qty']}</span>"; ?></td>
                         <td>
-                            <button onclick="openRestock(<?php echo $p['product_id']; ?>, '<?php echo $p['product_name']; ?>')" class="btn btn-success" style="font-size:0.8em;">+ Stock</button>
-                            <button onclick="openEdit(<?php echo htmlspecialchars(json_encode($p)); ?>)" class="btn btn-warning" style="font-size:0.8em;">Edit</button>
+                            <button onclick="openRestock(<?php echo $p['product_id']; ?>, '<?php echo htmlspecialchars(addslashes($p['product_name'])); ?>')" class="btn btn-success" style="font-size:0.8em;">+ Stock</button>
+                            <button onclick='openEdit(<?php echo json_encode($p, JSON_HEX_APOS | JSON_HEX_QUOT); ?>)' class="btn btn-warning" style="font-size:0.8em;">Edit</button>
                             <a href="?delete_id=<?php echo $p['product_id']; ?>" class="btn btn-danger" style="font-size:0.8em;" onclick="return confirm('Trash this product?')">Del</a>
                         </td>
                     </tr>
@@ -144,10 +149,10 @@ $logs = $conn->query("SELECT l.*, p.product_name, e.employee_name FROM Stock_Log
                 <?php while($l = $logs->fetch_assoc()): ?>
                 <li style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">
                     <div style="display: flex; justify-content: space-between;">
-                        <strong><?php echo $l['product_name']; ?></strong>
+                        <strong><?php echo htmlspecialchars($l['product_name']); ?></strong>
                         <span style="<?php echo $l['qty_change'] > 0 ? 'color:green':'color:red'; ?>"><?php echo $l['qty_change'] > 0 ? '+'.$l['qty_change'] : $l['qty_change']; ?></span>
                     </div>
-                    <div style="font-size: 0.8em; color: #64748b;"><?php echo $l['log_type']; ?> by <?php echo $l['employee_name']; ?><br><?php echo date('d/M H:i', strtotime($l['log_date'])); ?></div>
+                    <div style="font-size: 0.8em; color: #64748b;"><?php echo $l['log_type']; ?> by <?php echo htmlspecialchars($l['employee_name']); ?><br><?php echo date('d/M H:i', strtotime($l['log_date'])); ?></div>
                 </li>
                 <?php endwhile; ?>
             </ul>
@@ -163,10 +168,10 @@ $logs = $conn->query("SELECT l.*, p.product_name, e.employee_name FROM Stock_Log
                 <?php while($t = $trash->fetch_assoc()): ?>
                 <tr>
                     <td>#<?php echo $t['product_id']; ?></td>
-                    <td><strike style="color: #94a3b8;"><?php echo $t['product_name']; ?></strike></td>
+                    <td><strike style="color: #94a3b8;"><?php echo htmlspecialchars($t['product_name']); ?></strike></td>
                     <td>
                         <span class="audit-tag">
-                            <?php echo $t['deleter_name'] ? $t['deleter_name'] : 'Unknown'; ?>
+                            <?php echo $t['deleter_name'] ? htmlspecialchars($t['deleter_name']) : 'Unknown'; ?>
                         </span><br>
                         <small style="color: #64748b;"><?php echo $t['deleted_at'] ? date('d/m/Y H:i', strtotime($t['deleted_at'])) : '-'; ?></small>
                     </td>
@@ -183,15 +188,70 @@ $logs = $conn->query("SELECT l.*, p.product_name, e.employee_name FROM Stock_Log
 
 </div>
 
-<div id="addModal" class="modal"><div class="modal-content"><h2>✨ New Product</h2><form method="POST"><label>Name:</label><input type="text" name="name" required style="width:100%; margin-bottom:10px;"><label>Cost:</label><input type="number" step="0.01" name="cost" required style="width:100%; margin-bottom:10px;"><label>Price:</label><input type="number" step="0.01" name="price" required style="width:100%; margin-bottom:10px;"><label>Stock:</label><input type="number" name="qty" value="0" required style="width:100%; margin-bottom:10px;"><button type="submit" name="add_product" class="btn btn-primary" style="width:100%">Save</button><button type="button" onclick="closeModal('addModal')" class="btn btn-secondary" style="width:100%; margin-top:5px;">Cancel</button></form></div></div>
-<div id="restockModal" class="modal"><div class="modal-content"><h2>📦 Add Stock</h2><p>Product: <strong id="res_name"></strong></p><form method="POST"><input type="hidden" name="product_id" id="res_id"><input type="number" name="qty_add" min="1" required style="width:100%; margin-bottom:10px;"><button type="submit" name="restock_submit" class="btn btn-success" style="width:100%">Confirm</button><button type="button" onclick="closeModal('restockModal')" class="btn btn-secondary" style="width:100%; margin-top:5px;">Cancel</button></form></div></div>
-<div id="editModal" class="modal"><div class="modal-content"><h2>✏️ Edit Product</h2><form method="POST"><input type="hidden" name="product_id" id="edit_id"><label>Name:</label><input type="text" name="name" id="edit_name" required style="width:100%; margin-bottom:10px;"><label>Cost:</label><input type="number" step="0.01" name="cost" id="edit_cost" required style="width:100%; margin-bottom:10px;"><label>Price:</label><input type="number" step="0.01" name="price" id="edit_price" required style="width:100%; margin-bottom:10px;"><button type="submit" name="edit_product" class="btn btn-warning" style="width:100%">Update</button><button type="button" onclick="closeModal('editModal')" class="btn btn-secondary" style="width:100%; margin-top:5px;">Cancel</button></form></div></div>
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <h2>✨ New Product</h2>
+        <form method="POST">
+            <label>Name:</label>
+            <input type="text" name="name" required style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;">
+            <label>Description:</label>
+            <textarea name="description" rows="2" style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;"></textarea>
+            <label>Cost:</label>
+            <input type="number" step="0.01" name="cost" required style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;">
+            <label>Price:</label>
+            <input type="number" step="0.01" name="price" required style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;">
+            <label>Stock:</label>
+            <input type="number" name="qty" value="0" required style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;">
+            <button type="submit" name="add_product" class="btn btn-primary" style="width:100%">Save</button>
+            <button type="button" onclick="closeModal('addModal')" class="btn btn-secondary" style="width:100%; margin-top:5px;">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<div id="restockModal" class="modal">
+    <div class="modal-content">
+        <h2>📦 Add Stock</h2>
+        <p>Product: <strong id="res_name"></strong></p>
+        <form method="POST">
+            <input type="hidden" name="product_id" id="res_id">
+            <input type="number" name="qty_add" min="1" required style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;">
+            <button type="submit" name="restock_submit" class="btn btn-success" style="width:100%">Confirm</button>
+            <button type="button" onclick="closeModal('restockModal')" class="btn btn-secondary" style="width:100%; margin-top:5px;">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h2>✏️ Edit Product</h2>
+        <form method="POST">
+            <input type="hidden" name="product_id" id="edit_id">
+            <label>Name:</label>
+            <input type="text" name="name" id="edit_name" required style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;">
+            <label>Description:</label>
+            <textarea name="description" id="edit_desc" rows="2" style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;"></textarea>
+            <label>Cost:</label>
+            <input type="number" step="0.01" name="cost" id="edit_cost" required style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;">
+            <label>Price:</label>
+            <input type="number" step="0.01" name="price" id="edit_price" required style="width:100%; margin-bottom:10px; padding: 5px; box-sizing: border-box;">
+            <button type="submit" name="edit_product" class="btn btn-warning" style="width:100%">Update</button>
+            <button type="button" onclick="closeModal('editModal')" class="btn btn-secondary" style="width:100%; margin-top:5px;">Cancel</button>
+        </form>
+    </div>
+</div>
 
 <script>
 function openModal(id) { document.getElementById(id).style.display = 'block'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function openRestock(id, name) { document.getElementById('res_id').value = id; document.getElementById('res_name').innerText = name; openModal('restockModal'); }
-function openEdit(product) { document.getElementById('edit_id').value = product.product_id; document.getElementById('edit_name').value = product.product_name; document.getElementById('edit_cost').value = product.cost; document.getElementById('edit_price').value = product.price; openModal('editModal'); }
+function openEdit(product) { 
+    document.getElementById('edit_id').value = product.product_id; 
+    document.getElementById('edit_name').value = product.product_name; 
+    document.getElementById('edit_desc').value = product.description || '';
+    document.getElementById('edit_cost').value = product.cost; 
+    document.getElementById('edit_price').value = product.price; 
+    openModal('editModal'); 
+}
 window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.style.display = "none"; }
 </script>
 </body>
