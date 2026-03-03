@@ -91,7 +91,7 @@ if (isset($_POST['save_order'])) {
 
 <div class="container">
     <div class="card" style="border-top: 5px solid #2563eb;">
-        <h1 style="color: #2563eb;">📝 Create Sales Order</h1>
+        <h1 style="color: #2563eb;">Create Sales Order</h1>
         <p style="color: #64748b;">Record customer order (Stock will be deducted upon shipment)</p>
         
         <form method="POST" onsubmit="return validateOrder()">
@@ -170,7 +170,7 @@ if (isset($_POST['save_order'])) {
             <input type="hidden" name="net_hidden" id="net_hidden">
 
             <button type="submit" name="save_order" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.2rem; margin-top: 20px;">
-                💾 Save Order (Pending)
+                Save Order (Pending)
             </button>
         </form>
     </div>

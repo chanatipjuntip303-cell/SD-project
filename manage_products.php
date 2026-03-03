@@ -100,7 +100,7 @@ $logs = $conn->query("SELECT l.*, p.product_name, e.employee_name FROM Stock_Log
 
 <div class="container">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1>📦 Inventory Management</h1>
+        <h1>Inventory Management</h1>
         <button onclick="openModal('addModal')" class="btn btn-primary">+ Add New Product</button>
     </div>
 
@@ -128,7 +128,7 @@ $logs = $conn->query("SELECT l.*, p.product_name, e.employee_name FROM Stock_Log
         </div>
 
         <div class="card">
-            <h3>🕒 Recent Movements</h3>
+            <h3>Recent Movements</h3>
             <ul style="list-style: none; padding: 0;">
                 <?php while($l = $logs->fetch_assoc()): ?>
                 <li style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">
@@ -145,7 +145,7 @@ $logs = $conn->query("SELECT l.*, p.product_name, e.employee_name FROM Stock_Log
 
     <?php if($trash->num_rows > 0): ?>
     <div class="card" style="margin-top: 30px; border-top: 4px solid #ef4444;">
-        <h3 style="color: #ef4444;">🗑️ Recycle Bin (Deleted Products)</h3>
+        <h3 style="color: #ef4444;">Recycle Bin (Deleted Products)</h3>
         <table>
             <thead><tr><th>ID</th><th>Name</th><th>Deleted By (Audit)</th><th>Actions</th></tr></thead>
             <tbody>
@@ -155,13 +155,13 @@ $logs = $conn->query("SELECT l.*, p.product_name, e.employee_name FROM Stock_Log
                     <td><strike style="color: #94a3b8;"><?php echo $t['product_name']; ?></strike></td>
                     <td>
                         <span class="audit-tag">
-                            👤 <?php echo $t['deleter_name'] ? $t['deleter_name'] : 'Unknown'; ?>
+                            <?php echo $t['deleter_name'] ? $t['deleter_name'] : 'Unknown'; ?>
                         </span><br>
                         <small style="color: #64748b;"><?php echo $t['deleted_at'] ? date('d/m/Y H:i', strtotime($t['deleted_at'])) : '-'; ?></small>
                     </td>
                     <td>
-                        <a href="?restore_id=<?php echo $t['product_id']; ?>" class="btn btn-success" style="font-size:0.8em;">♻️ Restore</a>
-                        <a href="?perm_del_id=<?php echo $t['product_id']; ?>" class="btn btn-danger" style="font-size:0.8em;" onclick="return confirm('Delete Permanently?')">❌ Delete</a>
+                        <a href="?restore_id=<?php echo $t['product_id']; ?>" class="btn btn-success" style="font-size:0.8em;">Restore</a>
+                        <a href="?perm_del_id=<?php echo $t['product_id']; ?>" class="btn btn-danger" style="font-size:0.8em;" onclick="return confirm('Delete Permanently?')">Delete</a>
                     </td>
                 </tr>
                 <?php endwhile; ?>

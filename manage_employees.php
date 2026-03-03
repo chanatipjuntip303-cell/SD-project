@@ -128,7 +128,7 @@ $trash = $conn->query("SELECT e1.*, e2.employee_name as deleter_name
 
 <div class="container">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1>👔 Employee Management</h1>
+        <h1>Employee Management</h1>
         <button onclick="openModal('addModal')" class="btn btn-primary">+ New Employee</button>
     </div>
 
@@ -169,7 +169,7 @@ $trash = $conn->query("SELECT e1.*, e2.employee_name as deleter_name
         </div>
 
         <div class="card">
-            <h3>🕒 Recently Added</h3>
+            <h3>Recently Added</h3>
             <ul style="list-style: none; padding: 0;">
                 <?php while($r = $recent->fetch_assoc()): ?>
                 <li style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">
@@ -186,7 +186,7 @@ $trash = $conn->query("SELECT e1.*, e2.employee_name as deleter_name
 
     <?php if($trash->num_rows > 0): ?>
     <div class="card" style="margin-top: 30px; border-top: 4px solid #ef4444;">
-        <h3 style="color: #ef4444;">🗑️ Disabled Accounts (Recycle Bin)</h3>
+        <h3 style="color: #ef4444;">Disabled Accounts (Recycle Bin)</h3>
         <table>
             <thead><tr><th>ID</th><th>Name</th><th>Deleted By (Audit)</th><th>Actions</th></tr></thead>
             <tbody>
@@ -195,12 +195,12 @@ $trash = $conn->query("SELECT e1.*, e2.employee_name as deleter_name
                     <td>#<?php echo $t['employee_id']; ?></td>
                     <td><strike style="color: #94a3b8;"><?php echo $t['employee_name']; ?></strike> (<?php echo $t['role']; ?>)</td>
                     <td>
-                        <span class="audit-tag">👤 <?php echo $t['deleter_name'] ? $t['deleter_name'] : 'Unknown'; ?></span><br>
+                        <span class="audit-tag"> <?php echo $t['deleter_name'] ? $t['deleter_name'] : 'Unknown'; ?></span><br>
                         <small style="color: #64748b;"><?php echo $t['deleted_at'] ? date('d/m/Y H:i', strtotime($t['deleted_at'])) : '-'; ?></small>
                     </td>
                     <td>
-                        <a href="?restore_id=<?php echo $t['employee_id']; ?>" class="btn btn-success" style="font-size:0.8em;">♻️ Restore</a>
-                        <a href="?perm_del_id=<?php echo $t['employee_id']; ?>" class="btn btn-danger" style="font-size:0.8em;" onclick="return confirm('Delete Permanently?')">❌ Delete</a>
+                        <a href="?restore_id=<?php echo $t['employee_id']; ?>" class="btn btn-success" style="font-size:0.8em;">Restore</a>
+                        <a href="?perm_del_id=<?php echo $t['employee_id']; ?>" class="btn btn-danger" style="font-size:0.8em;" onclick="return confirm('Delete Permanently?')">Delete</a>
                     </td>
                 </tr>
                 <?php endwhile; ?>
@@ -213,7 +213,7 @@ $trash = $conn->query("SELECT e1.*, e2.employee_name as deleter_name
 
 <div id="addModal" class="modal">
     <div class="modal-content">
-        <h2>👔 Add Employee</h2>
+        <h2>Add Employee</h2>
         <form method="POST">
             <label>Full Name:</label>
             <input type="text" name="name" required style="width:100%; margin-bottom:10px; padding:8px;">
@@ -235,7 +235,7 @@ $trash = $conn->query("SELECT e1.*, e2.employee_name as deleter_name
 
 <div id="editModal" class="modal">
     <div class="modal-content">
-        <h2>✏️ Edit Employee</h2>
+        <h2>Edit Employee</h2>
         <form method="POST">
             <input type="hidden" name="employee_id" id="edit_id">
             <label>Full Name:</label>

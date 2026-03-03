@@ -99,7 +99,7 @@ if (isset($_POST['submit_pos'])) {
 
 <div class="container">
     <div style="margin-bottom: 20px;">
-        <h1 style="color: #2563eb;">🛒 Direct Sale (POS)</h1>
+        <h1 style="color: #2563eb;">Direct Sale (POS)</h1>
         <p style="color: #64748b;">Fast Checkout - No Discount - Instant Stock Deduction</p>
     </div>
 
@@ -154,19 +154,19 @@ if (isset($_POST['submit_pos'])) {
                 
                 <div style="margin-bottom: 15px;">
                     <label style="color: #64748b;">Cashier / Salesperson:</label>
-                    <div class="readonly-field">👤 <?php echo $emp_name; ?></div>
+                    <div class="readonly-field"><?php echo $emp_name; ?></div>
                 </div>
 
                 <div style="margin-bottom: 25px;">
                     <label style="color: #64748b;">Customer:</label>
-                    <div class="readonly-field">👥 <?php echo $cust_name; ?></div>
+                    <div class="readonly-field"><?php echo $cust_name; ?></div>
                 </div>
 
                 <input type="hidden" name="cart_data" id="cart_data">
                 <input type="hidden" name="total_hidden" id="total_hidden">
 
                 <button type="submit" name="submit_pos" class="btn btn-success" style="width: 100%; padding: 15px; font-size: 1.5rem; font-weight: bold;">
-                    💵 Pay Cash
+                    Pay Cash
                 </button>
             </form>
         </div>

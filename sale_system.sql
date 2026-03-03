@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Feb 26, 2026 at 12:41 PM
+-- Generation Time: Mar 03, 2026 at 04:42 PM
 -- Server version: 8.0.45
 -- PHP Version: 8.3.30
 
@@ -89,16 +89,23 @@ CREATE TABLE `Invoices` (
   `invoice_type` enum('Standard','Direct') DEFAULT 'Standard',
   `invoice_date` datetime DEFAULT CURRENT_TIMESTAMP,
   `payment_status` enum('Pending','Paid','Cash') DEFAULT 'Pending',
-  `issued_by` int DEFAULT NULL
+  `issued_by` int DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT 'Cash',
+  `payment_date` datetime DEFAULT NULL,
+  `transaction_id` varchar(100) DEFAULT NULL,
+  `amount_received` decimal(10,2) DEFAULT NULL,
+  `received_by` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `Invoices`
 --
 
-INSERT INTO `Invoices` (`invoice_id`, `order_id`, `invoice_type`, `invoice_date`, `payment_status`, `issued_by`) VALUES
-(1, 1, 'Direct', '2026-02-26 10:59:08', 'Paid', 1),
-(2, 2, 'Standard', '2026-02-26 12:19:54', 'Paid', 1);
+INSERT INTO `Invoices` (`invoice_id`, `order_id`, `invoice_type`, `invoice_date`, `payment_status`, `issued_by`, `payment_method`, `payment_date`, `transaction_id`, `amount_received`, `received_by`) VALUES
+(1, 1, 'Direct', '2026-02-26 10:59:08', 'Paid', 1, 'Cash', NULL, NULL, NULL, NULL),
+(2, 2, 'Standard', '2026-02-26 12:19:54', 'Paid', 1, 'Cash', NULL, NULL, NULL, NULL),
+(3, 6, 'Standard', '2026-03-03 15:48:03', 'Paid', 1, 'Cash', NULL, NULL, NULL, NULL),
+(4, 7, 'Standard', '2026-03-03 16:03:53', 'Paid', 1, 'Cash', '2026-03-03 23:04:00', 'REC-1234', 30875.00, 1);
 
 -- --------------------------------------------------------
 
@@ -117,17 +124,26 @@ CREATE TABLE `Orders` (
   `discount_amount` decimal(10,2) DEFAULT '0.00',
   `net_total` decimal(10,2) DEFAULT '0.00',
   `status` enum('Pending','Shipped','Cancelled') DEFAULT 'Pending',
-  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int DEFAULT NULL,
+  `is_deleted` tinyint(1) DEFAULT '0',
+  `deleted_by` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `Orders`
 --
 
-INSERT INTO `Orders` (`order_id`, `po_ref`, `order_type`, `customer_id`, `employee_id`, `order_date`, `total_amount`, `discount_amount`, `net_total`, `status`, `updated_at`) VALUES
-(1, 'POS-20260226-1059', 'Direct', 1, 1, '2026-02-26 10:59:08', 1200.00, 0.00, 1200.00, 'Shipped', NULL),
-(2, 'PO-2026-001', 'Standard', 2, 1, '2026-02-26 11:19:51', 36000.00, 3600.00, 32400.00, 'Shipped', '2026-02-26 12:19:54'),
-(3, 'PO-2026-002', 'Standard', 2, 1, '2026-02-26 12:22:05', 49500.00, 0.00, 49500.00, 'Cancelled', '2026-02-26 12:22:52');
+INSERT INTO `Orders` (`order_id`, `po_ref`, `order_type`, `customer_id`, `employee_id`, `order_date`, `total_amount`, `discount_amount`, `net_total`, `status`, `updated_at`, `updated_by`, `is_deleted`, `deleted_by`, `deleted_at`) VALUES
+(1, 'POS-20260226-1059', 'Direct', 1, 1, '2026-02-26 10:59:08', 1200.00, 0.00, 1200.00, 'Shipped', NULL, NULL, 0, NULL, NULL),
+(2, 'PO-2026-001', 'Standard', 2, 1, '2026-02-26 11:19:51', 36000.00, 3600.00, 32400.00, 'Shipped', '2026-02-26 12:19:54', NULL, 0, NULL, NULL),
+(3, 'PO-2026-002', 'Standard', 2, 1, '2026-02-26 12:22:05', 49500.00, 0.00, 49500.00, 'Cancelled', '2026-02-26 12:22:52', NULL, 0, NULL, NULL),
+(4, 'PO-2026-002', 'Standard', 3, 1, '2026-02-28 13:37:17', 24000.00, 1200.00, 22800.00, 'Cancelled', '2026-02-28 13:37:40', NULL, 0, NULL, NULL),
+(5, 'PO-2026-002', 'Standard', 3, 1, '2026-03-02 11:33:29', 24000.00, 1200.00, 22800.00, 'Cancelled', '2026-03-02 11:34:00', NULL, 0, NULL, NULL),
+(6, 'PO-2026-002', 'Standard', 3, 1, '2026-03-03 15:36:16', 14400.00, 720.00, 13680.00, 'Shipped', '2026-03-03 15:48:03', 1, 0, 1, '2026-03-03 15:41:49'),
+(7, 'PO-2026-002', 'Standard', 3, 1, '2026-03-03 16:03:13', 32500.00, 1625.00, 30875.00, 'Shipped', '2026-03-03 16:03:53', NULL, 0, NULL, NULL),
+(8, 'PO-2026-001', 'Standard', 3, 1, '2026-03-03 16:30:29', 1200.00, 60.00, 1140.00, 'Pending', NULL, NULL, 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -151,7 +167,12 @@ CREATE TABLE `Order_Details` (
 INSERT INTO `Order_Details` (`id`, `order_id`, `product_id`, `qty`, `unit_price`, `subtotal`) VALUES
 (1, 1, 2, 1, 1200.00, 1200.00),
 (2, 2, 2, 30, 1200.00, 36000.00),
-(3, 3, 3, 11, 4500.00, 49500.00);
+(3, 3, 3, 11, 4500.00, 49500.00),
+(4, 4, 2, 20, 1200.00, 24000.00),
+(5, 5, 2, 20, 1200.00, 24000.00),
+(7, 6, 2, 12, 1200.00, 14400.00),
+(8, 7, 1, 13, 2500.00, 32500.00),
+(9, 8, 2, 1, 1200.00, 1200.00);
 
 -- --------------------------------------------------------
 
@@ -177,8 +198,8 @@ CREATE TABLE `Products` (
 --
 
 INSERT INTO `Products` (`product_id`, `product_name`, `description`, `cost`, `price`, `stock_qty`, `is_deleted`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
-(1, 'Mechanical Keyboard', NULL, 1500.00, 2500.00, 31, 0, '2026-02-26 12:29:24', NULL, NULL),
-(2, 'Gaming Mouse', NULL, 800.00, 1200.00, 19, 0, '2026-02-26 12:19:54', NULL, NULL),
+(1, 'Mechanical Keyboard', NULL, 1500.00, 2500.00, 18, 0, '2026-03-03 16:03:53', NULL, NULL),
+(2, 'Gaming Mouse', NULL, 800.00, 1200.00, 7, 0, '2026-03-03 15:48:03', NULL, NULL),
 (3, 'Monitor 24inch', NULL, 3000.00, 4500.00, 10, 0, NULL, NULL, NULL),
 (4, 'Charlie K.', NULL, 100.00, 120.00, 20, 1, '2026-02-26 10:32:21', 1, '2026-02-26 10:32:21');
 
@@ -206,7 +227,9 @@ INSERT INTO `Stock_Logs` (`log_id`, `product_id`, `qty_change`, `log_type`, `emp
 (1, 4, 20, 'Restock', 1, NULL, '2026-02-26 10:16:28'),
 (2, 2, -1, 'Sale', 1, 1, '2026-02-26 10:59:08'),
 (3, 2, -30, 'Sale', 1, 2, '2026-02-26 12:19:54'),
-(4, 1, 11, 'Restock', 1, NULL, '2026-02-26 12:29:24');
+(4, 1, 11, 'Restock', 1, NULL, '2026-02-26 12:29:24'),
+(5, 2, -12, 'Sale', 1, 6, '2026-03-03 15:48:03'),
+(6, 1, -13, 'Sale', 1, 7, '2026-03-03 16:03:53');
 
 --
 -- Indexes for dumped tables
@@ -284,19 +307,19 @@ ALTER TABLE `Employees`
 -- AUTO_INCREMENT for table `Invoices`
 --
 ALTER TABLE `Invoices`
-  MODIFY `invoice_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `invoice_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `Orders`
 --
 ALTER TABLE `Orders`
-  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `Order_Details`
 --
 ALTER TABLE `Order_Details`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `Products`
@@ -308,7 +331,7 @@ ALTER TABLE `Products`
 -- AUTO_INCREMENT for table `Stock_Logs`
 --
 ALTER TABLE `Stock_Logs`
-  MODIFY `log_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `log_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
