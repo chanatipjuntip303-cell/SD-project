@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Mar 03, 2026 at 04:42 PM
+-- Generation Time: Mar 04, 2026 at 06:22 PM
 -- Server version: 8.0.45
 -- PHP Version: 8.3.30
 
@@ -74,8 +74,7 @@ CREATE TABLE `Employees` (
 INSERT INTO `Employees` (`employee_id`, `employee_name`, `username`, `password`, `role`, `is_deleted`, `created_at`, `created_by`, `deleted_by`, `deleted_at`) VALUES
 (1, 'Admin Manager', 'admin', '1234', 'Manager', 0, '2026-02-26 09:51:47', NULL, NULL, NULL),
 (2, 'Sales Person', 'sale', '1234', 'Sales', 0, '2026-02-26 09:51:47', NULL, NULL, NULL),
-(3, 'Stock Keeper', 'stock', '1234', 'Inventory', 0, '2026-02-26 09:51:47', NULL, NULL, NULL),
-(4, 'Charlie K.', 'sales', '1234', 'Sales', 1, '2026-02-26 10:40:08', 1, 1, '2026-02-26 10:40:13');
+(3, 'Stock Keeper', 'stock', '1234', 'Inventory', 0, '2026-02-26 09:51:47', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -102,10 +101,9 @@ CREATE TABLE `Invoices` (
 --
 
 INSERT INTO `Invoices` (`invoice_id`, `order_id`, `invoice_type`, `invoice_date`, `payment_status`, `issued_by`, `payment_method`, `payment_date`, `transaction_id`, `amount_received`, `received_by`) VALUES
-(1, 1, 'Direct', '2026-02-26 10:59:08', 'Paid', 1, 'Cash', NULL, NULL, NULL, NULL),
-(2, 2, 'Standard', '2026-02-26 12:19:54', 'Paid', 1, 'Cash', NULL, NULL, NULL, NULL),
-(3, 6, 'Standard', '2026-03-03 15:48:03', 'Paid', 1, 'Cash', NULL, NULL, NULL, NULL),
-(4, 7, 'Standard', '2026-03-03 16:03:53', 'Paid', 1, 'Cash', '2026-03-03 23:04:00', 'REC-1234', 30875.00, 1);
+(5, 9, 'Direct', '2026-03-04 09:41:55', 'Paid', 1, 'Cash', NULL, NULL, NULL, NULL),
+(6, 10, 'Standard', '2026-03-04 09:43:24', 'Paid', 1, 'Cash', '2026-03-04 16:43:00', 'REC-1234', 9154.50, 1),
+(7, 11, 'Standard', '2026-03-04 17:58:18', 'Paid', 1, 'Cash', '2026-03-05 00:58:00', 'REC-1235', 7624.50, 1);
 
 -- --------------------------------------------------------
 
@@ -128,22 +126,19 @@ CREATE TABLE `Orders` (
   `updated_by` int DEFAULT NULL,
   `is_deleted` tinyint(1) DEFAULT '0',
   `deleted_by` int DEFAULT NULL,
-  `deleted_at` datetime DEFAULT NULL
+  `deleted_at` datetime DEFAULT NULL,
+  `shipping_company` varchar(100) DEFAULT NULL,
+  `tracking_number` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `Orders`
 --
 
-INSERT INTO `Orders` (`order_id`, `po_ref`, `order_type`, `customer_id`, `employee_id`, `order_date`, `total_amount`, `discount_amount`, `net_total`, `status`, `updated_at`, `updated_by`, `is_deleted`, `deleted_by`, `deleted_at`) VALUES
-(1, 'POS-20260226-1059', 'Direct', 1, 1, '2026-02-26 10:59:08', 1200.00, 0.00, 1200.00, 'Shipped', NULL, NULL, 0, NULL, NULL),
-(2, 'PO-2026-001', 'Standard', 2, 1, '2026-02-26 11:19:51', 36000.00, 3600.00, 32400.00, 'Shipped', '2026-02-26 12:19:54', NULL, 0, NULL, NULL),
-(3, 'PO-2026-002', 'Standard', 2, 1, '2026-02-26 12:22:05', 49500.00, 0.00, 49500.00, 'Cancelled', '2026-02-26 12:22:52', NULL, 0, NULL, NULL),
-(4, 'PO-2026-002', 'Standard', 3, 1, '2026-02-28 13:37:17', 24000.00, 1200.00, 22800.00, 'Cancelled', '2026-02-28 13:37:40', NULL, 0, NULL, NULL),
-(5, 'PO-2026-002', 'Standard', 3, 1, '2026-03-02 11:33:29', 24000.00, 1200.00, 22800.00, 'Cancelled', '2026-03-02 11:34:00', NULL, 0, NULL, NULL),
-(6, 'PO-2026-002', 'Standard', 3, 1, '2026-03-03 15:36:16', 14400.00, 720.00, 13680.00, 'Shipped', '2026-03-03 15:48:03', 1, 0, 1, '2026-03-03 15:41:49'),
-(7, 'PO-2026-002', 'Standard', 3, 1, '2026-03-03 16:03:13', 32500.00, 1625.00, 30875.00, 'Shipped', '2026-03-03 16:03:53', NULL, 0, NULL, NULL),
-(8, 'PO-2026-001', 'Standard', 3, 1, '2026-03-03 16:30:29', 1200.00, 60.00, 1140.00, 'Pending', NULL, NULL, 0, NULL, NULL);
+INSERT INTO `Orders` (`order_id`, `po_ref`, `order_type`, `customer_id`, `employee_id`, `order_date`, `total_amount`, `discount_amount`, `net_total`, `status`, `updated_at`, `updated_by`, `is_deleted`, `deleted_by`, `deleted_at`, `shipping_company`, `tracking_number`) VALUES
+(9, 'POS-20260304-0941', 'Direct', 1, 1, '2026-03-04 09:41:55', 399.00, 0.00, 399.00, 'Shipped', NULL, NULL, 0, NULL, NULL, NULL, NULL),
+(10, 'PO-2026-001', 'Standard', 3, 1, '2026-03-04 09:43:15', 10770.00, 1615.50, 9154.50, 'Shipped', '2026-03-04 18:00:35', NULL, 0, NULL, NULL, 'Kerry Express', 'TH1233'),
+(11, 'PO-2026-002', 'Standard', 3, 1, '2026-03-04 17:56:28', 8970.00, 1345.50, 7624.50, 'Shipped', '2026-03-04 17:58:18', NULL, 0, NULL, NULL, 'Kerry Express', 'TH1234');
 
 -- --------------------------------------------------------
 
@@ -165,14 +160,9 @@ CREATE TABLE `Order_Details` (
 --
 
 INSERT INTO `Order_Details` (`id`, `order_id`, `product_id`, `qty`, `unit_price`, `subtotal`) VALUES
-(1, 1, 2, 1, 1200.00, 1200.00),
-(2, 2, 2, 30, 1200.00, 36000.00),
-(3, 3, 3, 11, 4500.00, 49500.00),
-(4, 4, 2, 20, 1200.00, 24000.00),
-(5, 5, 2, 20, 1200.00, 24000.00),
-(7, 6, 2, 12, 1200.00, 14400.00),
-(8, 7, 1, 13, 2500.00, 32500.00),
-(9, 8, 2, 1, 1200.00, 1200.00);
+(10, 9, 2, 1, 399.00, 399.00),
+(11, 10, 4, 30, 359.00, 10770.00),
+(12, 11, 5, 30, 299.00, 8970.00);
 
 -- --------------------------------------------------------
 
@@ -198,10 +188,12 @@ CREATE TABLE `Products` (
 --
 
 INSERT INTO `Products` (`product_id`, `product_name`, `description`, `cost`, `price`, `stock_qty`, `is_deleted`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
-(1, 'Mechanical Keyboard', NULL, 1500.00, 2500.00, 18, 0, '2026-03-03 16:03:53', NULL, NULL),
-(2, 'Gaming Mouse', NULL, 800.00, 1200.00, 7, 0, '2026-03-03 15:48:03', NULL, NULL),
-(3, 'Monitor 24inch', NULL, 3000.00, 4500.00, 10, 0, NULL, NULL, NULL),
-(4, 'Charlie K.', NULL, 100.00, 120.00, 20, 1, '2026-02-26 10:32:21', 1, '2026-02-26 10:32:21');
+(1, 'Revitalizing Toner', 'ปลอบประโลมผืวหลังอาบน้ำ เติมความชุ่มชื้น ลดความแห้งกร้าน', 399.20, 499.00, 68, 0, '2026-03-04 09:42:32', NULL, NULL),
+(2, 'Deep Moisturizing Cream', 'เติมความชุ่มชื้นเข้าสู่ชั้นใต้ผิว เหมาะสำหรับผู้ที่มีปัญหาผิวแห้งกร้านหรือขาดน้ำ', 319.20, 399.00, 56, 0, '2026-03-04 09:42:27', NULL, NULL),
+(3, 'Intensive Serum', 'เซรั่มสูตรเข้มข้นพิเศษที่ออกแบบมาเพื่อการฟื้นบำรุงผิวอย่างล้ำลึกและเร่งด่วนในข้ามคืน ด้วยเทคโนโลยี Lanna-DeepClean เพื่อนำส่งสารสกัดจากพืชพรรณท้องถิ่นเข้าสู่ชั้นผิวได้อย่างมีประสิทธิภาพสูงสุด', 319.20, 399.00, 60, 0, '2026-03-04 09:42:21', NULL, NULL),
+(4, 'Daily Protection Sunscreen', 'ปกป้องผิวจากแสงแดด พร้อมสัมผัสที่บางเบา ไม่เหนียวเหนอะหนะ และเป็นมิตรต่อสิ่งแวดล้อม', 287.20, 359.00, 40, 0, '2026-03-04 09:43:24', 1, '2026-02-26 10:32:21'),
+(5, 'Gentle Face Scrub', 'ผลัดเซลล์ผิวอย่างอ่อนโยน เผยผิวกระจ่างใสด้วยวัตถุดิบทางธรรมชาติ', 239.20, 299.00, 70, 0, '2026-03-04 17:58:18', 1, '2026-03-03 18:31:27'),
+(6, 'Facial Clean Clear', 'คืนความสดชื่นให้ผิวหน้าด้วยพลังพืชพรรณท้องถิ่น ช่วยทำความสะอาดผิวอย่างหมดจดโดยไม่ทำลายน้ำหล่อเลี้ยงผิวตามธรรมชาติ ให้ผิวหน้าเนียนนุ่ม ไม่แห้งตึง', 207.20, 259.00, 30, 0, '2026-03-04 09:29:58', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -224,12 +216,13 @@ CREATE TABLE `Stock_Logs` (
 --
 
 INSERT INTO `Stock_Logs` (`log_id`, `product_id`, `qty_change`, `log_type`, `employee_id`, `related_order_id`, `log_date`) VALUES
-(1, 4, 20, 'Restock', 1, NULL, '2026-02-26 10:16:28'),
-(2, 2, -1, 'Sale', 1, 1, '2026-02-26 10:59:08'),
-(3, 2, -30, 'Sale', 1, 2, '2026-02-26 12:19:54'),
-(4, 1, 11, 'Restock', 1, NULL, '2026-02-26 12:29:24'),
-(5, 2, -12, 'Sale', 1, 6, '2026-03-03 15:48:03'),
-(6, 1, -13, 'Sale', 1, 7, '2026-03-03 16:03:53');
+(9, 2, -1, 'Sale', 1, 9, '2026-03-04 09:41:55'),
+(10, 4, 50, 'Restock', 1, NULL, '2026-03-04 09:42:14'),
+(11, 3, 50, 'Restock', 1, NULL, '2026-03-04 09:42:21'),
+(12, 2, 50, 'Restock', 1, NULL, '2026-03-04 09:42:27'),
+(13, 1, 50, 'Restock', 1, NULL, '2026-03-04 09:42:32'),
+(14, 4, -30, 'Sale', 1, 10, '2026-03-04 09:43:24'),
+(15, 5, -30, 'Sale', 1, 11, '2026-03-04 17:58:18');
 
 --
 -- Indexes for dumped tables
@@ -307,31 +300,31 @@ ALTER TABLE `Employees`
 -- AUTO_INCREMENT for table `Invoices`
 --
 ALTER TABLE `Invoices`
-  MODIFY `invoice_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `invoice_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `Orders`
 --
 ALTER TABLE `Orders`
-  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `Order_Details`
 --
 ALTER TABLE `Order_Details`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `Products`
 --
 ALTER TABLE `Products`
-  MODIFY `product_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `product_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `Stock_Logs`
 --
 ALTER TABLE `Stock_Logs`
-  MODIFY `log_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `log_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
