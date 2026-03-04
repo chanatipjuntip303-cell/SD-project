@@ -8,8 +8,8 @@ $uid = $_SESSION['user_id'];
 $emp_name = $_SESSION['user_name'];
 
 // --- 2. Fetch Data ---
-// ดึงข้อมูลลูกค้า (เอาไว้เลือก และเอาไว้เช็ค Premium ใน JS)
-$customers = $conn->query("SELECT * FROM Customers WHERE is_deleted = 0 ORDER BY contact_name ASC");
+// ดึงข้อมูลลูกค้า (ซ่อน General Customer / Walk-in ไม่ให้เปิดบิลเงินเชื่อได้)
+$customers = $conn->query("SELECT * FROM Customers WHERE is_deleted = 0 AND customer_id != 1 AND contact_name NOT LIKE '%General%' ORDER BY contact_name ASC");
 $cust_list = [];
 $cust_js_map = []; // เอาไว้ส่งไปให้ JavaScript เช็ค Level
 while($c = $customers->fetch_assoc()) {
@@ -53,7 +53,7 @@ if (isset($_POST['save_order'])) {
                               VALUES ($order_id, $p_id, $qty, $price, $subtotal)");
             }
 
-            echo "<script>alert('✅ Sales Order Saved! (Status: Pending)\\nPlease go to Manage Orders to ship.'); window.location='manage_orders.php';</script>";
+            echo "<script>alert('Sales Order Saved! (Status: Pending)\\nPlease go to Manage Orders to ship.'); window.location='manage_orders.php';</script>";
         } else {
             echo "<script>alert('Error: " . $conn->error . "');</script>";
         }
@@ -104,7 +104,7 @@ if (isset($_POST['save_order'])) {
                         <?php foreach($cust_list as $c): ?>
                             <option value="<?php echo $c['customer_id']; ?>">
                                 <?php echo $c['contact_name']; ?> 
-                                <?php echo ($c['membership_level'] == 'Premium') ? '(💎 Premium)' : ''; ?>
+                                <?php echo ($c['membership_level'] == 'Premium') ? '(Premium)' : ''; ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -248,17 +248,17 @@ function recalculate() {
     // 1. Premium & > 29 items = 15%
     if (isPremium && totalQty > 29) {
         discountPercent = 15;
-        badgeText = "💎 Premium + Bulk (15%)";
+        badgeText = "Premium + Bulk (15%)";
     } 
     // 2. Buy > 29 items = 10%
     else if (totalQty > 29) {
         discountPercent = 10;
-        badgeText = "📦 Bulk Order (10%)";
+        badgeText = "Bulk Order (10%)";
     } 
     // 3. Premium Customer = 5%
     else if (isPremium) {
         discountPercent = 5;
-        badgeText = "💎 Premium (5%)";
+        badgeText = "Premium (5%)";
     }
 
     // คำนวณเงินส่วนลด

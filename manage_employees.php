@@ -69,14 +69,27 @@ if (isset($_GET['restore_id'])) {
     header("Location: manage_employees.php");
 }
 
-// 2.5 ลบถาวร (Permanent Delete)
+//ลบถาวร (Permanent Delete)
 if (isset($_GET['perm_del_id'])) {
-    $eid = $_GET['perm_del_id'];
-    if ($eid == 1 || $eid == $uid) {
-        echo "<script>alert('Action not allowed!'); window.location='manage_employees.php';</script>";
-    } else {
-        $conn->query("DELETE FROM Employees WHERE employee_id = $eid");
+    $emp_id = (int)$_GET['perm_del_id'];
+    
+    // ป้องกันไม่ให้พนักงานลบบัญชีตัวเองที่กำลังล็อกอินอยู่ (เพื่อความปลอดภัย)
+    if ($emp_id == $_SESSION['user_id']) {
+        echo "<script>alert('❌ คุณไม่สามารถลบบัญชีที่กำลังใช้งานอยู่ได้!'); window.location='manage_employees.php';</script>";
+        exit();
+    }
+    
+    try {
+        // ลองพยายามลบข้อมูลพนักงาน
+        $conn->query("DELETE FROM Employees WHERE employee_id = $emp_id");
         header("Location: manage_employees.php");
+        
+    } catch (mysqli_sql_exception $e) {
+        // ถ้าฐานข้อมูลเตะกลับมา (ติด Foreign Key) ให้แสดงแจ้งเตือน
+        echo "<script>
+            alert('ไม่อนุญาตให้ลบถาวร!\\n\\nพนักงานรายนี้เคยมีประวัติการทำรายการในระบบแล้ว (เช่น เปิดบิล, รับชำระเงิน, หรือแก้ไขออเดอร์)\\nระบบจึงทำการล็อกข้อมูลไว้เพื่อรักษาความถูกต้องของ Audit Trail และเส้นทางการตรวจสอบทางบัญชี\\n\\n คำแนะนำ: การกดย้ายลงถังขยะ (Soft Delete) ระบบได้ทำการระงับสิทธิ์การ Login ของพนักงานคนนี้เรียบร้อยแล้ว ให้ปล่อยทิ้งไว้ในถังขยะได้เลย'); 
+            window.location='manage_employees.php';
+        </script>";
     }
 }
 

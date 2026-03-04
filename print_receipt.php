@@ -59,7 +59,7 @@ $items = $conn->query("SELECT d.*, p.product_name
         
         /* Info Grid */
         .info-grid { display: flex; justify-content: space-between; margin-bottom: 30px; }
-        .info-box { width: 48%; }
+        .info-box { width: 32%; }
         .info-label { font-weight: 700; color: #1e293b; font-size: 0.9rem; border-bottom: 1px solid #cbd5e1; margin-bottom: 5px; padding-bottom: 3px; }
         
         /* Table */
@@ -135,7 +135,19 @@ $items = $conn->query("SELECT d.*, p.product_name
                 <?php echo nl2br($inv['cust_address']); ?>
             </div>
         </div>
+        
         <div class="info-box">
+            <?php if(!empty($inv['tracking_number'])): ?>
+                <div class="info-label" style="color: #0369a1;">SHIPPING DETAILS / ข้อมูลจัดส่ง:</div>
+                <strong style="color: #0369a1;"><?php echo $inv['shipping_company']; ?></strong><br>
+                <div style="color: #475569; margin-top: 5px; font-size: 0.9rem;">
+                    <strong>Tracking No:</strong> <?php echo $inv['tracking_number']; ?><br>
+                    <strong>Ship To:</strong> <i>(Same as Billing Address)</i>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="info-box" style="text-align: right;">
             <div class="info-label">DOCUMENT STATUS / สถานะ:</div>
             <?php if($inv['payment_status'] == 'Paid'): ?>
                 <h2 style="color: #166534; margin: 5px 0 0 0; letter-spacing: 2px;">PAID</h2>
