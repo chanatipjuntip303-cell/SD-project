@@ -190,12 +190,18 @@ $items = $conn->query("SELECT d.*, p.product_name
         
         <div class="payment-details">
             <div class="info-label" style="border-bottom:none; color:#2563eb;">PAYMENT DETAILS / ข้อมูลการชำระเงิน</div>
-            <?php if($inv['payment_status'] == 'Paid'): ?>
+            <?php if($inv['payment_status'] == 'Paid'): 
+                // 💡 ระบบ Fallback: ถ้าเป็นบิล POS หรือข้อมูลว่างเปล่า ให้ใช้ค่า Default ทันที
+                $p_method = $inv['payment_method'] ? $inv['payment_method'] : 'Cash (POS)';
+                $p_date = $inv['payment_date'] ? date('d M Y, H:i', strtotime($inv['payment_date'])) : date('d M Y, H:i', strtotime($inv['invoice_date']));
+                $p_trans = $inv['transaction_id'] ? $inv['transaction_id'] : $inv['po_ref'];
+                $p_amount = $inv['amount_received'] ? $inv['amount_received'] : $inv['net_total'];
+            ?>
                 <table style="margin-bottom:0; font-size:0.9rem;">
-                    <tr><td style="padding:3px; border:none; width: 40%;"><strong>Method:</strong></td><td style="padding:3px; border:none;"><?php echo $inv['payment_method']; ?></td></tr>
-                    <tr><td style="padding:3px; border:none;"><strong>Date/Time:</strong></td><td style="padding:3px; border:none;"><?php echo date('d M Y, H:i', strtotime($inv['payment_date'])); ?></td></tr>
-                    <tr><td style="padding:3px; border:none;"><strong>Transaction ID:</strong></td><td style="padding:3px; border:none;"><?php echo $inv['transaction_id']; ?></td></tr>
-                    <tr><td style="padding:3px; border:none;"><strong>Amount Rcvd:</strong></td><td style="padding:3px; border:none; font-weight:bold; color:#166534;">฿<?php echo number_format($inv['amount_received'], 2); ?></td></tr>
+                    <tr><td style="padding:3px; border:none; width: 40%;"><strong>Method:</strong></td><td style="padding:3px; border:none;"><?php echo $p_method; ?></td></tr>
+                    <tr><td style="padding:3px; border:none;"><strong>Date/Time:</strong></td><td style="padding:3px; border:none;"><?php echo $p_date; ?></td></tr>
+                    <tr><td style="padding:3px; border:none;"><strong>Transaction ID:</strong></td><td style="padding:3px; border:none;"><?php echo $p_trans; ?></td></tr>
+                    <tr><td style="padding:3px; border:none;"><strong>Amount Rcvd:</strong></td><td style="padding:3px; border:none; font-weight:bold; color:#166534;">฿<?php echo number_format($p_amount, 2); ?></td></tr>
                 </table>
             <?php else: ?>
                 <div style="color: #94a3b8; margin-top: 10px; font-style: italic;">

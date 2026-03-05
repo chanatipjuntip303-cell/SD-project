@@ -55,9 +55,9 @@ if (isset($_POST['submit_pos'])) {
                               VALUES ($p_id, -$qty, 'Sale', $uid, $order_id)");
             }
 
-            // 3. สร้าง Invoice ทันที (สถานะ Paid, ประเภท Direct)
-            $sql_inv = "INSERT INTO Invoices (order_id, payment_status, issued_by, invoice_type) 
-                        VALUES ($order_id, 'Paid', $uid, 'Direct')";
+            // 3. สร้าง Invoice ทันที พร้อมยัดข้อมูล Payment เข้าไปให้ครบ! (อัปเดตใหม่)
+            $sql_inv = "INSERT INTO Invoices (order_id, payment_status, issued_by, invoice_type, payment_method, payment_date, transaction_id, amount_received, received_by) 
+                        VALUES ($order_id, 'Paid', $uid, 'Direct', 'Cash (POS)', NOW(), '$po_ref', $total_amount, $uid)";
             $conn->query($sql_inv);
 
             $conn->commit(); // ยืนยันข้อมูลทั้งหมด

@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('Asia/Bangkok');
+
 $host = 'db'; // ชื่อ service ใน docker-compose
 $user = 'root';
 $pass = 'root_password';
@@ -10,4 +12,5 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 // เชื่อมต่อสำเร็จ!
+$conn->query("SET time_zone = '+07:00'");
 ?>
