@@ -73,7 +73,7 @@ if (isset($_POST['login_btn'])) {
 <body>
 
 <div class="login-card">
-    <h1>📦 SD System</h1>
+    <h1>Element</h1>
     <p style="color: #64748b; margin-bottom: 30px;">Please sign in to continue</p>
 
     <?php if($error): ?>

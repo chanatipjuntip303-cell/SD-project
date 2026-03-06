@@ -104,7 +104,7 @@ $logs = $conn->query("SELECT l.*, p.product_name, e.employee_name FROM Stock_Log
 <body>
 
 <nav class="navbar">
-    <a href="index.php" class="nav-brand">SD Project</a>
+    <a href="index.php" class="nav-brand">Element</a>
     <div class="nav-menu">
         <a href="index.php">Dashboard</a>
         <a href="manage_products.php" class="active">Inventory</a>

@@ -79,7 +79,7 @@ $trash = $conn->query("SELECT c.*, e.employee_name as deleter_name
 <body>
 
 <nav class="navbar">
-    <a href="index.php" class="nav-brand">SD Project</a>
+    <a href="index.php" class="nav-brand">Element</a>
     <div class="nav-menu">
         <a href="index.php">Dashboard</a>
         <a href="manage_customers.php" class="active">Customers</a>

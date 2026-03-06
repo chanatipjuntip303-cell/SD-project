@@ -80,7 +80,7 @@ if (isset($_POST['save_order'])) {
 <body>
 
 <nav class="navbar">
-    <a href="index.php" class="nav-brand">SD Project</a>
+    <a href="index.php" class="nav-brand">Element</a>
     <div class="nav-menu">
         <a href="index.php">Dashboard</a>
         <a href="pos_direct_sale.php">POS (หน้าร้าน)</a>

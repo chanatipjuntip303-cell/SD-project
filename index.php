@@ -60,7 +60,7 @@ $role = $_SESSION['user_role'] ?? 'General';
 <body>
 
 <nav class="navbar">
-    <div class="nav-brand">SD Project System</div>
+    <div class="nav-brand">Element</div>
     <div class="nav-menu">
         <span style="margin-right: 15px; color: #64748b;"><?php echo $emp_name; ?> (<?php echo $role; ?>)</span>
         <a href="logout.php" style="color: #ef4444;">Logout</a>

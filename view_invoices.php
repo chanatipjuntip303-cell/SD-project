@@ -91,7 +91,7 @@ $pending_count = $conn->query("SELECT COUNT(*) as cnt FROM Invoices WHERE paymen
 <body>
 
 <nav class="navbar">
-    <a href="index.php" class="nav-brand">SD Project</a>
+    <a href="index.php" class="nav-brand">Element</a>
     <div class="nav-menu">
         <a href="index.php">Dashboard</a>
         <a href="pos_direct_sale.php">POS</a>
@@ -187,10 +187,19 @@ $pending_count = $conn->query("SELECT COUNT(*) as cnt FROM Invoices WHERE paymen
                         </td>
                         <td>
                             <?php if($inv['payment_status'] == 'Pending'): ?>
-                                <button onclick="openPaymentModal(<?php echo $inv['invoice_id']; ?>, <?php echo $inv['net_total']; ?>, 'INV-<?php echo str_pad($inv['invoice_id'], 5, '0', STR_PAD_LEFT); ?>')" class="btn btn-success" style="padding: 6px 12px; margin-bottom: 5px;">Receive Payment</button>
-                                <br>
+                                <button type="button" class="btn btn-primary" style="padding: 4px 8px; font-size: 0.85em; margin-bottom: 4px; display: block; width: 100%;" 
+                                        onclick="openPaymentModal(<?php echo $inv['invoice_id']; ?>, <?php echo $inv['net_total']; ?>, '<?php echo $inv['po_ref']; ?>')">
+                                    Receive Payment
+                                </button>
+                                
+                                <a href="print_receipt.php?id=<?php echo $inv['invoice_id']; ?>" class="btn btn-warning" style="padding: 4px 8px; font-size: 0.85em; display: block; width: 100%; text-align: center;">
+                                    Print Invoice
+                                </a>
+
                             <?php else: ?>
-                                <a href="print_receipt.php?id=<?php echo $inv['invoice_id']; ?>" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; display: inline-block;">Print Receipt</a>
+                                <a href="print_receipt.php?id=<?php echo $inv['invoice_id']; ?>" class="btn btn-success" style="padding: 4px 8px; font-size: 0.85em; display: block; width: 100%; text-align: center;">
+                                    Print Receipt
+                                </a>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -207,7 +216,7 @@ $pending_count = $conn->query("SELECT COUNT(*) as cnt FROM Invoices WHERE paymen
 
 <div id="paymentModal" class="modal">
     <div class="modal-content">
-        <h2 style="color: #166534; border-bottom: 2px solid #dcfce7; padding-bottom: 10px;">💰 Receive Payment</h2>
+        <h2 style="color: #166534; border-bottom: 2px solid #dcfce7; padding-bottom: 10px;">Receive Payment</h2>
         <p style="color: #64748b; font-size: 0.9rem;">Invoice: <strong id="disp_inv_no"></strong></p>
         <form method="POST">
             <input type="hidden" name="invoice_id" id="pay_inv_id">

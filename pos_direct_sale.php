@@ -88,7 +88,7 @@ if (isset($_POST['submit_pos'])) {
 <body>
 
 <nav class="navbar">
-    <a href="index.php" class="nav-brand">SD Project</a>
+    <a href="index.php" class="nav-brand">Element</a>
     <div class="nav-menu">
         <a href="index.php">Dashboard</a>
         <a href="pos_direct_sale.php" class="active">POS (หน้าร้าน)</a>
