@@ -213,6 +213,7 @@ function removeFromCart(index) {
 }
 
 // 🧠 หัวใจสำคัญ: Logic การคำนวณส่วนลด
+// 🧠 หัวใจสำคัญ: Logic การคำนวณส่วนลด
 function recalculate() {
     const tbody = document.getElementById('cart_body');
     tbody.innerHTML = "";
@@ -242,30 +243,33 @@ function recalculate() {
         isPremium = true;
     }
 
-    let discountPercent = 0;
+    let discountAmount = 0;
     let badgeText = "";
 
-    // 1. Premium & > 29 items = 15%
+    // 1. Premium & > 29 items = ลด 10% ก่อน แล้วลดเพิ่มอีก 5% (Successive Discount)
     if (isPremium && totalQty > 29) {
-        discountPercent = 15;
-        badgeText = "Premium + Bulk (15%)";
+        let step1_discount = subtotal * 0.10;         // ลด 10% ก้อนแรก
+        let after_step1 = subtotal - step1_discount;  // ยอดคงเหลือหลังหัก 10%
+        let step2_discount = after_step1 * 0.05;      // นำยอดที่เหลือมาลดก้อนสองอีก 5%
+        
+        discountAmount = step1_discount + step2_discount; // รวมมูลค่าส่วนลดทั้งหมด
+        badgeText = "Premium + Bulk (10% + 5%)";
     } 
-    // 2. Buy > 29 items = 10%
+    // 2. Buy > 29 items = 10% (ลูกค้าทั่วไปซื้อเยอะ)
     else if (totalQty > 29) {
-        discountPercent = 10;
+        discountAmount = subtotal * 0.10;
         badgeText = "Bulk Order (10%)";
     } 
-    // 3. Premium Customer = 5%
+    // 3. Premium Customer = 5% (ลูกค้าพรีเมียมซื้อน้อย)
     else if (isPremium) {
-        discountPercent = 5;
+        discountAmount = subtotal * 0.05;
         badgeText = "Premium (5%)";
     }
 
-    // คำนวณเงินส่วนลด
-    let discountAmount = subtotal * (discountPercent / 100);
+    // คำนวณยอดเงินสุทธิ
     let netTotal = subtotal - discountAmount;
 
-    // อัปเดตหน้าจอ (UI)
+    // --- ⚠️ อัปเดตหน้าจอ (UI) ---
     document.getElementById('disp_total_qty').innerText = totalQty;
     document.getElementById('disp_subtotal').innerText = '฿' + subtotal.toLocaleString(undefined, {minimumFractionDigits: 2});
     document.getElementById('disp_discount').innerText = '-฿' + discountAmount.toLocaleString(undefined, {minimumFractionDigits: 2});
@@ -273,14 +277,14 @@ function recalculate() {
 
     // จัดการป้าย (Badge) โชว์เหตุผลส่วนลด
     const badge = document.getElementById('discount_badge');
-    if (discountPercent > 0) {
+    if (discountAmount > 0) {
         badge.innerText = badgeText;
         badge.style.display = 'inline-block';
     } else {
         badge.style.display = 'none';
     }
 
-    // อัปเดต Hidden inputs สำหรับส่งไป PHP
+    // --- ⚠️ อัปเดต Hidden inputs สำหรับส่งไปให้ PHP (ส่วนนี้แหละที่หายไป!) ---
     document.getElementById('cart_data').value = JSON.stringify(cart);
     document.getElementById('total_hidden').value = subtotal.toFixed(2);
     document.getElementById('discount_hidden').value = discountAmount.toFixed(2);
